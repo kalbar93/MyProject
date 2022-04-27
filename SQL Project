@@ -1,0 +1,218 @@
+CREATE DATABASE Sklep_odziezowy;
+USE Sklep_odziezowy;
+
+CREATE TABLE Dostawca (
+ID_Producenta INT PRIMARY KEY,
+Nazwa_producenta TEXT NOT NULL ,
+Adres_producenta TEXT NULL,
+NIP INT UNIQUE,
+Data_umowy DATE NOT NULL);
+
+
+CREATE TABLE Produkt(ID_produktu INT PRIMARY KEY,
+ID_producenta INT NOT NULL,
+nazwa_produktu TEXT NOT NULL,
+opis_produktu TEXT NOT NULL,
+cena_netto_zakupu INT NOT NULL,
+cena_brutto_zakupu INT,
+cena_netto_sprzedaży INT,
+cena_brutto_sprzedaży INT,
+procent_VAT_sprzedaży INT);
+
+ALTER TABLE Produkt 
+RENAME COLUMN ID_producenta TO Nazwa_Producenta;
+
+ALTER TABLE Produkt 
+MODIFY COLUMN Nazwa_Producenta TEXT;
+
+CREATE TABLE Zamowienie(Id_zamowienia INT PRIMARY KEY,
+Id_klienta INT,
+Id_produktu INT,
+Data_zamowienia DATE);
+
+CREATE TABLE Klient(Id_klienta INT PRIMARY KEY,
+Id_zamowienia INT,
+Imię TEXT,
+Nazwisko TEXT,
+adres TEXT);
+
+ INSERT INTO Dostawca VALUES (1,'Producent 1 ','Adres 1',12345678,'2022-01-01'),
+ (2,'Producent 2','Adres 2','87654321','2021-02-03'),
+ (3,'Producent 3','Adres 3','56781234','2019-04-10'),
+ (4,'Producent 4','Adres 4','09876789','2009-10-10');
+
+SELECT * FROM Dostawca;
+
+UPDATE Dostawca
+SET NIP ='98767896'
+WHERE ID_Producenta=4;
+
+INSERT INTO Produkt(ID_produktu,Nazwa_Producenta,nazwa_produktu,opis_produktu,
+cena_netto_zakupu,cena_brutto_zakupu ,cena_netto_sprzedaży,cena_brutto_sprzedaży, procent_VAT_sprzedaży) VALUES
+(1,'Producent 1','Produkt 1','Opis produktu 1','150','200','170','220','23'),
+(2,'Producent 1','Produkt 2','Opis produktu 2','90','120','110','140','23'),
+(3,'Producent 1','Produkt 3','Opis produktu 3','10','20','15','25','8'),
+(4,'Producent 1','Produkt 4','Opis produktu 4','50','68','70','87','5'),
+(5,'Producent 1','Produkt 5','Opis produktu 5','5','9','8','12','8'),
+(6,'Producent 2','Produkt 6','Opis produktu 6','334','350','370','400','23'),
+(7,'Producent 2','Produkt 7','Opis produktu 7','555','560','581','600','23'),
+(8,'Producent 2','Produkt 8','Opis produktu 8','87','90','100','109','8'),
+(9,'Producent 2','Produkt 9','Opis produktu 9','47','55','62','80','5'),
+(10,'Producent 2','Produkt 10','Opis produktu10' ,'821','850','711','904','23'),
+(11,'Producent 3','Produkt 11','Opis produktu 11','911','1000','1001','1220','5'),
+(12,'Producent 3','Produkt 12','Opis produktu 12','219','225','250','270','23'),
+(13,'Producent 3','Produkt 13','Opis produktu 13','360','400','500','600','8'),
+(14,'Producent 3','Produkt 14','Opis produktu 14','790','800','810','900','8'),
+(15,'Producent 3','Produkt 15','Opis produktu 15','300','330','240','200','5'),
+(16,'Producent 4','Produkt 16','Opis produktu 16','400','420','500','520','23'),
+(17,'Producent 4','Produkt 17','Opis produktu 17','990','1000','1100','1000','23'),
+(18,'Producent 4','Produkt 18','Opis produktu 18','270','280','300','340','5'),
+(19,'Producent 4','Produkt 19','Opis produktu 19','550','560','600','610','5'),
+(20,'Producent 4','Produkt 20','Opis produktu 20','299','305','310','330','5');
+
+SELECT * FROM Produkt;
+
+ALTER TABLE Produkt 
+MODIFY COLUMN cena_netto_zakupu DECIMAL;
+
+ALTER TABLE Produkt 
+MODIFY COLUMN cena_brutto_zakupu DECIMAL;
+
+ALTER TABLE Produkt 
+MODIFY COLUMN cena_netto_sprzedaży DECIMAL;
+
+ALTER TABLE Produkt 
+MODIFY COLUMN cena_brutto_sprzedaży DECIMAL;
+
+INSERT INTO Zamowienie VALUES 
+(1,1,5,'2001-03-10'),
+(2,2,2,'2010-05-12'),
+(3,3,9,'2021-10-20'),
+(4,1,15,'2007-01-09'),
+(5,2,10,'2012-12-13'),
+(6,3,4,'2018-09-20'),
+(7,1,2,'2019-11-11'),
+(8,2,1,'2021-04-30'),
+(9,3,1,'2008-09-19'),
+(10,2,1,'2020-09-06');
+
+INSERT INTO Klient VALUES
+(1,1,'Robert','Norris','Søgård Ringvej 3'),
+(2,2,'Steven','Barlow','Møllekajen 12'),
+(3,3,'Luke','Cox','Ringsøvej 7'),
+(4,4,'Nadine','Kowalski','11 Cerney Lane'),
+(5,5,'Steve','Pitt','35 Rustic Lane'),
+(6,6,'Wenna','Johnson','27 Brock Road'),
+(7,7,'Roy','Connor','19 N Morton Street'),
+(8,8,'Gemma','Jones','13 Beaver Place'),
+(9,9,'Tom','Chan','Via Scipio Slataper9'),
+(10,10,'Harry','Wilson','Benterudbakken 132');
+
+SELECT* FROM Klient;
+SELECT * FROM Zamowienie;
+SELECT * FROM Produkt;
+SELECT * FROM Dostawca;
+
+ALTER TABLE Dostawca ADD CONSTRAINT Produkt_fk FOREIGN KEY (ID_Producenta) REFERENCES Produkt(ID_produktu);
+ALTER TABLE Zamowienie ADD CONSTRAINT Produkt_zamowienie_fk FOREIGN KEY (id_produktu) REFERENCES Produkt(ID_produktu);
+ALTER TABLE Klient ADD CONSTRAINT zamowienie_fk FOREIGN KEY (Id_zamowienia) REFERENCES Zamowienie(id_zamowienia);
+
+
+-- Wyświetl wszystkie produkty z wszystkimi danymi od dostawcy który znajduje się na pozycji 1 w tabeli „Dostawca”
+
+SELECT *
+FROM Dostawca d ,Produkt p
+WHERE d.ID_producenta = 1 AND p.Nazwa_Producenta = 'Producent 1' ;
+
+
+-- Posortuj te produkty po Nazwie od A-B
+
+SELECT *
+FROM Dostawca d ,Produkt p
+WHERE d.ID_producenta = 1 AND p.Nazwa_Producenta = 'Producent 1'
+ORDER BY nazwa_produktu;
+-- przy tych danych to sortowanie może być mało widoczne ale kwerenda wydaje się byc odpowiednia
+
+
+
+
+--  Wylicz średnią cenę za produktu od tego dostawcy
+
+SELECT d.Nazwa_producenta,ROUND(AVG(p.cena_netto_zakupu),2) AS 'Średnia zakupu netto',ROUND(AVG(p.cena_brutto_zakupu),2) AS 'Średnia zakupu brutto',
+ ROUND(AVG(p.cena_netto_sprzedaży),2) AS 'Średnia sprzedaż netto', ROUND(AVG(p.cena_brutto_sprzedaży),2) AS 'Średnia sprzedaż brutto'
+FROM Produkt p, Dostawca d
+WHERE d.ID_producenta = 1 AND p.Nazwa_Producenta = 'Producent 1';
+
+-- Wyświetl dwie grupy produktów tego producenta:
+-- Połowa najtańszych to grupa: „Tanie”
+-- Pozostałe to grupa: „Drogie”
+
+SELECT d.Nazwa_producenta,p.nazwa_produktu,p.cena_brutto_sprzedaży, 'Drogie' 
+FROM Dostawca d ,Produkt p
+WHERE d.ID_producenta = 1 AND p.Nazwa_Producenta = 'Producent 1'
+AND p.cena_brutto_sprzedaży > (SELECT AVG(p.cena_netto_sprzedaży) 
+FROM Dostawca d ,Produkt p
+WHERE d.ID_producenta = 1 AND p.Nazwa_Producenta = 'Producent 1')
+UNION
+SELECT d.Nazwa_producenta,p.nazwa_produktu,p.cena_brutto_sprzedaży, 'Tanie'
+FROM Dostawca d ,Produkt p
+WHERE d.ID_producenta = 1 AND p.Nazwa_Producenta = 'Producent 1'
+AND p.cena_brutto_sprzedaży < (SELECT AVG(p.cena_netto_sprzedaży) 
+FROM Dostawca d ,Produkt p
+WHERE d.ID_producenta = 1 AND p.Nazwa_Producenta = 'Producent 1');
+
+
+-- Wyświetl produkty zamówione, wyświetlając tylko ich nazwę
+SELECT * FROM Zamowienie;
+
+SELECT distinct p.nazwa_produktu
+FROM Produkt p, Zamowienie z
+INNER JOIN Klient k
+on z.Id_zamowienia = k.Id_zamowienia
+WHERE z.Id_zamowienia =k.Id_zamowienia ;
+
+-- Wyświetl wszystkie produkty zamówione – ograniczając wyświetlanie do 5 pozycji
+
+SELECT distinct p.nazwa_produktu
+FROM Produkt p, Zamowienie z
+INNER JOIN Klient k
+on z.Id_zamowienia = k.Id_zamowienia
+WHERE z.Id_zamowienia =k.Id_zamowienia 
+LIMIT 5;
+
+-- Policz łączną wartość wszystkich zamówień
+
+SELECT SUM(p.cena_netto_sprzedaży) AS 'Wartość wszystkich zamówień'
+FROM Zamowienie z, Produkt p 
+WHERE z.Id_produktu = p.Id_produktu;
+
+-- Wyświetl wszystkie zamówienia wraz z nazwą produktu sortując je wg daty od najstarszego do najnowszego
+SELECT z.Id_zamowienia, p.nazwa_produktu, z.Data_zamowienia
+FROM Zamowienie z, Produkt p 
+WHERE z.Id_produktu = p.Id_produktu
+ORDER BY Data_zamowienia ASC;
+
+
+-- Sprawdź czy w tabeli produkty masz uzupełnione wszystkie dane – wyświetl pozycje dla których brakuje danych
+
+SELECT * FROM Produkt WHERE NULL;
+
+-- Wyświetl produkt najczęściej sprzedawany wraz z jego ceną
+
+SELECT p.nazwa_produktu,p.cena_netto_sprzedaży
+FROM Zamowienie z, Produkt p 
+WHERE z.Id_produktu = p.Id_produktu
+GROUP BY p.ID_produktu
+ORDER BY COUNT(p.ID_produktu) DESC
+LIMIT 1;
+
+-- Znajdź dzień w którym najwięcej zostało złożonych zamówień
+
+SELECT Data_zamowienia, COUNT(Id_zamowienia)
+FROM Zamowienie
+GROUP BY Data_zamowienia
+HAVING MAX(Id_zamowienia);
+
+
+
+
